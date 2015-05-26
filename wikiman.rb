@@ -138,5 +138,6 @@ unless File.exists?("#{$man_path}#{$path}.#{$man_section}")
   end
 end
 
-# Load the manpage
-system("#{$man_bin} -l #{$man_path}#{$path}.#{$man_section}")
+# Load the manpage. Calls via sh so that bashrc etc. configuration
+# can take affect (e.g. man page highlighting)
+system("sh -i #{$man_bin} -l #{$man_path}#{$path}.#{$man_section}")
