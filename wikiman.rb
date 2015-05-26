@@ -14,7 +14,7 @@ $lang = "en"
 # load the html, then convert and save to a manpage
 unless File.exists?("#{$man_path}#{$path}.#{$man_section}")
   # Open the page
-  page = Nokogiri::HTML(open("http://#{$lang}.wikipedia.org/wiki/#{$path}"))
+  page = Nokogiri::HTML(open(Uri.encode("http://#{$lang}.wikipedia.org/wiki/#{$path}")))
   # Get the page title
   $title = page.title.split('-').first.strip
   # Extract the main content of the page
