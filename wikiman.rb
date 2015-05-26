@@ -3,18 +3,23 @@
 require 'rubygems'
 require 'nokogiri'
 require 'open-uri'
+require 'trollop'
 
 $path = ARGV[0].to_s.scrub.gsub(' ', '_')
+
+$opts = Trollop::options do
+  opt :refresh, "force a redownload and refresh of the page", :short => 'f'
+end
 
 $man_path = "./"
 $man_bin = "man"
 $man_section = 1
 $lang = "en"
-$force_refresh = false
+$force_refresh = ($opts[:refresh] || false)
 # Check if the manpage already exists in the man_path
 # and if it doesn't then translate it to a wikipedia url,
 # load the html, then convert and save to a manpage
-unless File.exists?("#{$man_path}#{$path}.#{$man_section}") || $force_refresh
+if !File.exists?("#{$man_path}#{$path}.#{$man_section}") || $force_refresh
   # Open the page
   page = Nokogiri::HTML(open(URI.encode("http://#{$lang}.wikipedia.org/wiki/#{$path}")))
   # Get the page title

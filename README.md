@@ -6,6 +6,6 @@ into a man file which will then be cached and accessed instead of downloading th
 of refresh system in the future, but I wrote this in a few hours on too much caffeine so it's not the best quality
 right now. But it works!
 
-Oh and it needs the Nokogiri gem for the web scraping, so
+Oh and it needs the Nokogiri gem for the web scraping, and the Trollop gem for opt parsing so
 
-    gem install nokogiri
+    gem install nokogiri trollop
