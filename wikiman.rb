@@ -14,7 +14,7 @@ $lang = "en"
 # load the html, then convert and save to a manpage
 unless File.exists?("#{$man_path}#{$path}.#{$man_section}")
   # Open the page
-  page = Nokogiri::HTML(open(Uri.encode("http://#{$lang}.wikipedia.org/wiki/#{$path}")))
+  page = Nokogiri::HTML(open(URI.encode("http://#{$lang}.wikipedia.org/wiki/#{$path}")))
   # Get the page title
   $title = page.title.split('-').first.strip
   # Extract the main content of the page
@@ -120,7 +120,7 @@ unless File.exists?("#{$man_path}#{$path}.#{$man_section}")
   content.search('ul').each do |x|
     text = ""
     x.search('li').each do |y|
-      text << ".B\n#{y.content},\n"
+      text << ".TP\n#{y.content},\n"
     end
     x.replace(Nokogiri::XML::Text.new(text.strip, x))
   end
