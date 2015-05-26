@@ -5,14 +5,16 @@ require 'nokogiri'
 require 'open-uri'
 
 $path = ARGV[0].to_s.scrub.gsub(' ', '_')
+
 $man_path = "./"
 $man_bin = "man"
 $man_section = 1
 $lang = "en"
+$force_refresh = false
 # Check if the manpage already exists in the man_path
 # and if it doesn't then translate it to a wikipedia url,
 # load the html, then convert and save to a manpage
-unless File.exists?("#{$man_path}#{$path}.#{$man_section}")
+unless File.exists?("#{$man_path}#{$path}.#{$man_section}") || $force_refresh
   # Open the page
   page = Nokogiri::HTML(open(URI.encode("http://#{$lang}.wikipedia.org/wiki/#{$path}")))
   # Get the page title
@@ -120,7 +122,7 @@ unless File.exists?("#{$man_path}#{$path}.#{$man_section}")
   content.search('ul').each do |x|
     text = ""
     x.search('li').each do |y|
-      text << ".TP\n#{y.content},\n"
+      text << ".TP\n#{y.content}\n"
     end
     x.replace(Nokogiri::XML::Text.new(text.strip, x))
   end
@@ -138,4 +140,4 @@ unless File.exists?("#{$man_path}#{$path}.#{$man_section}")
 end
 
 # Load the manpage
-exec("#{$man_bin} -l #{$man_path}#{$path}.#{$man_section}")
+exec("#{$man_bin}", *ARGV[1..-1], "-l", "#{$man_path}#{$path}.#{$man_section}")
