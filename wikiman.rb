@@ -34,11 +34,13 @@ if !File.exists?("#{$man_path}#{$path}.#{$man_section}") || $force_refresh
   content.search('table.vertical-navbox').remove  # Sideboxes
   content.search('span.mw-editsection').remove    # Edit marks
   refs = content.search('span#References')[0]     # Everything after and including references
-  refs = refs.parent # Span is in a <h2> element
-  while refs.next
-    refs.next.remove
+  if refs
+    refs = refs.parent # Span is in a <h2> element
+    while refs.next
+      refs.next.remove
+    end
+    refs.remove
   end
-  refs.remove
 
   # Replace links with their text, removing references
   content.search('a').each do |x|
