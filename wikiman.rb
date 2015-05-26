@@ -89,28 +89,6 @@ if !File.exists?("#{$man_path}#{$path}.#{$man_section}") || $force_refresh
     x.replace(header)
   end
 
-  # Format tables
-  content.search('table').each do |x|
-    table = ".TS\nallbox;\n" # Surround with a box
-    num_cols = nil
-    x.search('tr').each do |row|
-      unless num_cols
-        # Count the number of columns and print the alignment specifiers
-        num_cols = row.children.select{|y| y.name == 'td' || y.name == 'th'}.length
-        table << "#{'l ' * num_cols}.\n"
-      end
-      # Form the rows
-      row_text = ""
-      row.children.each do |col|
-        if col.name == 'td' || col.name == 'th'
-          row_text << col.content.strip << "\t"
-        end
-      end
-      table << "#{row_text.strip}\n"
-    end
-    table << ".TE\n"
-    x.replace(Nokogiri::XML::Text.new(table, x))
-  end
 
   # Format descripion lists
   content.search('dl').each do |x|
@@ -129,9 +107,41 @@ if !File.exists?("#{$man_path}#{$path}.#{$man_section}") || $force_refresh
   content.search('ul').each do |x|
     text = ""
     x.search('li').each do |y|
-      text << ".TP\n#{y.content}\n"
+      text << "\t#{y.content}\n"
     end
-    x.replace(Nokogiri::XML::Text.new(text.strip, x))
+    x.replace(Nokogiri::XML::Text.new(text, x))
+  end
+
+  # Format tables
+  content.search('table').each do |x|
+    table = ".TS\nallbox;\n" # Surround with a box
+    num_cols = nil
+    x.search('tr').each do |row|
+      unless num_cols
+        # Look at the number of columns (if there are any)
+        if !row.children.empty?
+          cols = row.children.select{|y| y.name == 'td' || y.name == 'th'}
+          # Use the colspan property if it exists
+          # to determine the number of columns
+          if cols.length > 0 && cols[0]['colspan']
+            num_cols = cols[0]['colspan'].to_i
+          else
+            num_cols = cols.length
+          end
+        end
+        table << "#{'l ' * num_cols}.\n"
+      end
+      # Form the rows
+      row_text = ""
+      row.children.each do |col|
+        if col.name == 'td' || col.name == 'th'
+          row_text << col.content.strip << "\t"
+        end
+      end
+      table << "#{row_text.strip}\n"
+    end
+    table << ".TE\n"
+    x.replace(Nokogiri::XML::Text.new(table, x))
   end
 
   # Reduce repeated newlines down to one
