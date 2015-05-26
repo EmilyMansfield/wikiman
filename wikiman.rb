@@ -13,7 +13,6 @@ $lang = "en"
 # and if it doesn't then translate it to a wikipedia url,
 # load the html, then convert and save to a manpage
 unless File.exists?("#{$man_path}#{$path}.#{$man_section}")
-  puts "downloading..."
   # Open the page
   page = Nokogiri::HTML(open("http://#{$lang}.wikipedia.org/wiki/#{$path}"))
   # Get the page title
@@ -138,6 +137,5 @@ unless File.exists?("#{$man_path}#{$path}.#{$man_section}")
   end
 end
 
-# Load the manpage. Calls via sh so that bashrc etc. configuration
-# can take affect (e.g. man page highlighting)
-system("sh -i #{$man_bin} -l #{$man_path}#{$path}.#{$man_section}")
+# Load the manpage
+exec("#{$man_bin} -l #{$man_path}#{$path}.#{$man_section}")
